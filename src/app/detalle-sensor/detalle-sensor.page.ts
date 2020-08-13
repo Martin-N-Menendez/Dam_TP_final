@@ -1,6 +1,10 @@
 //correr antes npm install --save highcharts
 import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
+import { ActivatedRoute } from '@angular/router';
+import { Dispositivo } from '../model/Dispositivo';
+import { DispositivoService } from '../services/dispositivo.service';
+
 declare var require: any;
 require('highcharts/highcharts-more')(Highcharts);
 require('highcharts/modules/solid-gauge')(Highcharts);
@@ -16,10 +20,12 @@ export class DetalleSensorPage implements OnInit {
   public myChart;
   private chartOptions;
 
-  constructor() { 
+  public dispositivo:Dispositivo;
+
+  constructor(private router:ActivatedRoute, private dServ:DispositivoService) { 
     setTimeout(()=>{
       console.log("Cambio el valor del sensor");
-      this.valorObtenido=60;
+      this.valorObtenido = 10 * this.dispositivo.dispositivoId; // TODO CAMBIAR por el valor POSTA! 
       //llamo al update del chart para refrescar y mostrar el nuevo valor
       this.myChart.update({series: [{
           name: 'kPA',
@@ -28,10 +34,14 @@ export class DetalleSensorPage implements OnInit {
               valueSuffix: ' kPA'
           }
       }]});
-    },6000);
+    },3000);
   }
 
+
   ngOnInit() {
+    let idDispositivo = this.router.snapshot.paramMap.get('id');
+    this.dispositivo = this.dServ.getDispositivo(idDispositivo);
+    console.log(this.dispositivo);
   }
 
   ionViewDidEnter() {
@@ -48,7 +58,7 @@ export class DetalleSensorPage implements OnInit {
           plotShadow: false
         }
         ,title: {
-          text: 'Sensor N° 1'
+          text: 'Sensor N° '+this.dispositivo.dispositivoId
         }
 
         ,credits:{enabled:false}

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { DispositivoService } from '../services/dispositivo.service';
-import { Dispositivo } from '../model/Dispositivo';
 
 @Component({
   selector: 'app-home',
@@ -9,12 +8,6 @@ import { Dispositivo } from '../model/Dispositivo';
 })
 export class HomePage {
 
-  listadoDispositivo:Dispositivo[];
-
-  constructor(public dispositivoServ:DispositivoService) {
-    dispositivoServ.getListadoDispositivos().then(lst=>{
-      this.listadoDispositivo=lst;
-    })
-  }
+  constructor(public dispositivoServ:DispositivoService) {}
 
 }

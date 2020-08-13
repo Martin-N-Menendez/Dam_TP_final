@@ -5,10 +5,14 @@
                 <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <ion-title>Dispositivo - {{this.idDispositivo}}</ion-title>
+        <ion-title>Sensor de {{dispositivo.ubicacion}}</ion-title>
     </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <div *ngIf="this.medicion !=null">Medida del sensor: {{this.medicion.valor}}</div>
+    <div>Acá deberia traer mas información del dispositivo y su medida del sensor</div>
+    <div>
+        <h3>{{dispositivo.ubicacion}} | {{dispositivo.dispositivoId}}</h3>
+    </div>
+
 </ion-content>
