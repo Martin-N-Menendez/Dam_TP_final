@@ -1,5 +1,9 @@
-import { Electrovalvula } from './electrovalvula.model';
-import { Medicion } from './medicion.model';
+//import { Electrovalvula } from './electrovalvula.model';
+//import { Medicion } from './medicion.model';
+
+var Electrovalvula = require('./electrovalvula.model');
+var Medicion = require('./medicion.model');
+
 
 export class Dispositivo {
     constructor(id = 0, nombre = 'dispositivo', ubicacion = 'lugar', medicion = new Medicion(), electrovalvula = new Electrovalvula()) {

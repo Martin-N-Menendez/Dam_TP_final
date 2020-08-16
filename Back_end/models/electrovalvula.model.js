@@ -1,4 +1,4 @@
-export class Electrovalvula {
+class Electrovalvula {
     constructor(id = 0, nombre = 'electrovalvula', apertura = 0) {
         this._electrovalvulaId = id;
         this._nombre = nombre;

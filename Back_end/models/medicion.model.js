@@ -1,4 +1,4 @@
-export class Medicion {
+class Medicion {
     constructor(id = 0, fecha = new Date("1900-01-01"), valor = 0) {
         this._medicionId = id;
         this._fecha = fecha;

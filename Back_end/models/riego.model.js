@@ -1,5 +1,7 @@
-import { Electrovalvula } from './electrovalvula.model';
-export class RiegoLog {
+//import { Electrovalvula } from './electrovalvula.model';
+const Electrovalvula = require('./electrovalvula.model');
+
+class RiegoLog {
     constructor(electrovalvula = new Electrovalvula(), apertura = 0, fecha = new Date('1900-01-01')) {
         this._electrovalvula = electrovalvula;
         this._apertura = apertura < 0 ? 0 : apertura > 100 ? 100 : apertura;
