@@ -8,6 +8,9 @@ export class DispositivoService {
   listado:Array<Dispositivo> = new Array<Dispositivo>();
   
   constructor() {
+
+    // Utilizar el HTTPCLIENT y conectarse aca al puerto
+
     var disp:Dispositivo= new Dispositivo(1,"Sensor 1","Patio",1);
     var disp2:Dispositivo= new Dispositivo(2,"Sensor 2","Cocina",2);
     var disp3:Dispositivo= new Dispositivo(3,"Sensor 3","Jardin Delantero",3);

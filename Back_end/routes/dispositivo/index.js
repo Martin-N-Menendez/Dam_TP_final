@@ -4,7 +4,7 @@ var pool = require('../../mysql');
 
 //Devuelve un array de dispositivos
 routerDispositivo.get('/', function(req, res) {
-    pool.query('Select * from Dispositivos', function(err, result, fields) {
+    pool.query('SELECT * FROM Dispositivos', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;

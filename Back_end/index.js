@@ -8,9 +8,9 @@ var routerMedicion = require('./routes/medicion');
 app.use(express.json());
 
 
-app.use('/api/dispositivo', routerDisp);
+app.use('/dispositivo', routerDisp);
 
-app.use('/api/medicion', routerMedicion);
+app.use('/medicion', routerMedicion);
 
 app.listen(PORT, function(req, res) {
     console.log("API Funcionando ");
