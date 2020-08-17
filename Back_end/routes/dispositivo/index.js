@@ -78,13 +78,41 @@ class RiegoLog {
 //Devuelve un array de dispositivos
 routerDispositivo.get('/', function(req, res) {
     pool.query('SELECT * FROM Dispositivos', function(err, result, fields) {
-        //console.log(result[0]);
         let dispositivos = new Array(Dispositivo);
-        for (var i = 0; i < 6; i++) {
+        //console.log(result);
+
+        for (var i = 0; i < 6; i++) {           // TODO como saber cuantos son?
             var r = result[i];
             console.log(r);
-            dispositivos.push(new Dispositivo(r.dispositivoId, r.nombre, r.ubicacion, r.electrovalvulaID, new Medicion(r.medicionId, new Date(r.fecha), r.valor), new Electrovalvula(r.electrovalvulaId, r.nombre, r.apertura)));
+            dispositivos.push(new Dispositivo(
+                r.dispositivoId, 
+                r.nombre, 
+                r.ubicacion, 
+                r.electrovalvulaID, 
+                new Medicion(r.medicionId, new Date(r.fecha), r.valor), 
+                new Electrovalvula(r.electrovalvulaId, r.nombre, r.apertura)));
         }
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        res.send(result);           // TODO esto es suficiente para q lo vea el Front End?
+    });
+});
+
+
+//Devuelve un dispositivos en particular
+routerDispositivo.get('/:id', function(req, res) {
+    pool.query('SELECT * FROM Dispositivos WHERE dispositivoId=?',req.params.id,  function(err, result, fields) {       // TODO que hago si el ID no existe?
+        var r = result[0];
+        let dispositivo = new Dispositivo(
+            r.dispositivoId,
+            r.nombre,
+            r.ubicacion,
+            r.electrovalvulaID,
+            new Medicion(r.medicionId,new Date(r.fecha),r.valor),
+            new Electrovalvula(r.electrovalvulaId,r.nombre,r.apertura)
+        );
         if (err) {
             res.send(err).status(400);
             return;
@@ -92,5 +120,6 @@ routerDispositivo.get('/', function(req, res) {
         res.send(result);
     });
 });
+
 
 module.exports = routerDispositivo;

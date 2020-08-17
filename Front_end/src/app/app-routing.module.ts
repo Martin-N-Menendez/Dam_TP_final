@@ -11,10 +11,6 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
-  /*{ ANULADO! ahora tiene que tener el sensor
-    path: 'dispositivo/:id',
-    loadChildren: () => import('./dispositivo/dispositivo.module').then( m => m.DispositivoPageModule)
-  },*/
   {
     path: 'dispositivo/:id',
     loadChildren: () => import('./detalle-sensor/detalle-sensor.module').then( m => m.DetalleSensorPageModule)

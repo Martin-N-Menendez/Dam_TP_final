@@ -4,6 +4,7 @@ var PORT = 3000;
 
 var routerDisp = require('./routes/dispositivo');
 var routerMedicion = require('./routes/medicion');
+var routerRiego = require('./routes/riego');
 
 app.use(express.json());
 
@@ -13,6 +14,8 @@ app.use(bodyParser.json())
 
 app.use('/dispositivo', routerDisp);
 app.use('/medicion', routerMedicion);
+app.use('/riego', routerRiego);
+
 
 app.listen(PORT, function(req, res) {
     console.log("API Funcionando ");
