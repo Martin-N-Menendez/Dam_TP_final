@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Log de riegos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <table>
+    <tr>
+      <th>Fecha</th>
+      <th>Apertura</th>
+    </tr>
+    <tr *ngFor="let e of logsRiego">
+      <td>{{e.fecha}}</td>
+      <td>{{e.apertura}}</td>
+    </tr>
+  </table>
+</ion-content>

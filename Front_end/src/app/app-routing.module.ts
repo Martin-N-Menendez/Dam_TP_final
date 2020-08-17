@@ -12,8 +12,16 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'dispositivo/:id',
+    path: 'detalle-sensor/:id',
     loadChildren: () => import('./detalle-sensor/detalle-sensor.module').then( m => m.DetalleSensorPageModule)
+  },
+  {
+    path: 'log-riego/:dispId',
+    loadChildren: () => import('./log-riego/log-riego.module').then( m => m.LogRiegoPageModule)
+  },
+  {
+    path: 'mediciones/:dispId',
+    loadChildren: () => import('./mediciones/mediciones.module').then( m => m.MedicionesPageModule)
   },
 ];
 

@@ -1,10 +1,11 @@
 //correr antes npm install --save highcharts
 import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
-import { ActivatedRoute } from '@angular/router';
-import { Dispositivo } from '../model/Dispositivo';
+import { Dispositivo } from '../models/dispositivo.model';
 import { DispositivoService } from '../services/dispositivo.service';
-
+import { ActivatedRoute } from '@angular/router';
+import { RiegoService } from '../services/riego.service';
+import { FilaLogRiego } from '../models/filaLogRiego.interface';
 declare var require: any;
 require('highcharts/highcharts-more')(Highcharts);
 require('highcharts/modules/solid-gauge')(Highcharts);
@@ -16,32 +17,41 @@ require('highcharts/modules/solid-gauge')(Highcharts);
 })
 export class DetalleSensorPage implements OnInit {
 
-  private valorObtenido:number=0;
+  public mensajeBoton: string = "ABRIR ELECTROVALVULA";
+
+  private valorObtenido: number = 0;
   public myChart;
   private chartOptions;
 
-  public dispositivo:Dispositivo;
+  public dispositivo: Dispositivo;
 
-  constructor(private router:ActivatedRoute, private dServ:DispositivoService) { 
-    setTimeout(()=>{
+  public laGranBilardo: Array<Dispositivo>;
+
+  constructor(private dServ: DispositivoService, private router: ActivatedRoute, private rServ: RiegoService) {
+    this.laGranBilardo = new Array<Dispositivo>();
+    setTimeout(() => {
       console.log("Cambio el valor del sensor");
-      this.valorObtenido = 10 * this.dispositivo.dispositivoId; // TODO CAMBIAR por el valor POSTA! 
+      this.valorObtenido = this.dispositivo.medicion.valor;
       //llamo al update del chart para refrescar y mostrar el nuevo valor
-      this.myChart.update({series: [{
+      this.myChart.update({
+        series: [{
           name: 'kPA',
           data: [this.valorObtenido],
           tooltip: {
-              valueSuffix: ' kPA'
+            valueSuffix: ' kPA'
           }
-      }]});
-    },3000);
+        }]
+      });
+    }, 6000);
   }
 
-
   ngOnInit() {
-    let idDispositivo = this.router.snapshot.paramMap.get('id');
-    this.dispositivo = this.dServ.getDispositivo(idDispositivo);
-    console.log(this.dispositivo);
+    let id: number = parseInt(this.router.snapshot.paramMap.get('id'));
+    this.dServ.getDispositivo(id).then(d => {
+      console.log(d);
+      this.dispositivo = d;
+      this.laGranBilardo.push(this.dispositivo);
+    });
   }
 
   ionViewDidEnter() {
@@ -49,74 +59,107 @@ export class DetalleSensorPage implements OnInit {
   }
 
   generarChart() {
-    this.chartOptions={
+    this.chartOptions = {
       chart: {
-          type: 'gauge',
-          plotBackgroundColor: null,
-          plotBackgroundImage: null,
-          plotBorderWidth: 0,
-          plotShadow: false
-        }
-        ,title: {
-          text: 'Sensor N° '+this.dispositivo.dispositivoId
-        }
+        type: 'gauge',
+        plotBackgroundColor: null,
+        plotBackgroundImage: null,
+        plotBorderWidth: 0,
+        plotShadow: false
+      }
+      , title: {
+        text: this.dispositivo.nombre
+      }
 
-        ,credits:{enabled:false}
-        
-           
-        ,pane: {
-            startAngle: -150,
-            endAngle: 150
-        } 
-        // the value axis
-      ,yAxis: {
+      , credits: { enabled: false }
+
+
+      , pane: {
+        startAngle: -150,
+        endAngle: 150
+      }
+      // the value axis
+      , yAxis: {
         min: 0,
         max: 100,
-  
+
         minorTickInterval: 'auto',
         minorTickWidth: 1,
         minorTickLength: 10,
         minorTickPosition: 'inside',
         minorTickColor: '#666',
-  
+
         tickPixelInterval: 30,
         tickWidth: 2,
         tickPosition: 'inside',
         tickLength: 10,
         tickColor: '#666',
         labels: {
-            step: 2,
-            rotation: 'auto'
+          step: 2,
+          rotation: 'auto'
         },
         title: {
-            text: 'kPA'
+          text: 'kPA'
         },
         plotBands: [{
-            from: 0,
-            to: 10,
-            color: '#55BF3B' // green
+          from: 0,
+          to: 10,
+          color: '#BBBBBB'
         }, {
-            from: 10,
-            to: 30,
-            color: '#DDDF0D' // yellow
+          from: 10,
+          to: 30,
+          color: '#55BF3B'
         }, {
-            from: 30,
-            to: 100,
-            color: '#DF5353' // red
+          from: 30,
+          to: 60,
+          color: '#DDDF0D'
+        }, {
+          from: 60,
+          to: 100,
+          color: '#DF5353'
         }]
-    }
-    ,
-  
-    series: [{
+      }
+      ,
+
+      series: [{
         name: 'kPA',
         data: [this.valorObtenido],
         tooltip: {
-            valueSuffix: ' kPA'
+          valueSuffix: ' kPA'
         }
-    }]
+      }]
 
     };
-    this.myChart = Highcharts.chart('highcharts', this.chartOptions );
+    this.myChart = Highcharts.chart('highcharts', this.chartOptions);
   }
 
+  public actualizarValvula() {
+    if (this.dispositivo.electrovalvula.apertura != 0) {
+      console.log("cerrando valvula");
+      let data = {
+        logRiegoId: 0,
+        apertura: 0,
+        fecha: new Date(),
+        electralvulaId: this.dispositivo.electrovalvula.id
+      }
+      this.rServ.newRiegoLog(data).then((result) => {
+        console.log(result);
+        console.log("valvula cerrada");
+        this.mensajeBoton = "ABRIR VALVULA";
+      })
+    } else {
+      console.log("abriendo valvula");
+      let data = {
+        logRiegoId: 0,
+        apertura: 100,
+        fecha: new Date(),
+        electralvulaId: this.dispositivo.electrovalvula.id
+      }
+      this.rServ.newRiegoLog(data).then((result) => {
+        console.log(result);
+        console.log("valvula abierta");
+        this.mensajeBoton = "CERRAR VALVULA";
+      })
+    }
+  }
 }

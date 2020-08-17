@@ -77,7 +77,12 @@ class RiegoLog {
 
 //Devuelve un array de dispositivos
 routerDispositivo.get('/', function(req, res) {
-    pool.query('SELECT * FROM Dispositivos', function(err, result, fields) {
+    pool.query('SELECT * FROM Listado', function(err, result, fields) {
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
+        
         let dispositivos = new Array(Dispositivo);
         //console.log(result);
 
@@ -92,10 +97,7 @@ routerDispositivo.get('/', function(req, res) {
                 new Medicion(r.medicionId, new Date(r.fecha), r.valor), 
                 new Electrovalvula(r.electrovalvulaId, r.nombre, r.apertura)));
         }
-        if (err) {
-            res.send(err).status(400);
-            return;
-        }
+        
         res.send(result);           // TODO esto es suficiente para q lo vea el Front End?
     });
 });
@@ -103,7 +105,11 @@ routerDispositivo.get('/', function(req, res) {
 
 //Devuelve un dispositivos en particular
 routerDispositivo.get('/:id', function(req, res) {
-    pool.query('SELECT * FROM Dispositivos WHERE dispositivoId=?',req.params.id,  function(err, result, fields) {       // TODO que hago si el ID no existe?
+    pool.query('SELECT * FROM Listado WHERE dispId=?',req.params.id,  function(err, result, fields) {       // TODO que hago si el ID no existe?
+        if (err) {
+            res.send(err).status(400);
+            return;
+        }
         var r = result[0];
         let dispositivo = new Dispositivo(
             r.dispositivoId,
@@ -113,10 +119,7 @@ routerDispositivo.get('/:id', function(req, res) {
             new Medicion(r.medicionId,new Date(r.fecha),r.valor),
             new Electrovalvula(r.electrovalvulaId,r.nombre,r.apertura)
         );
-        if (err) {
-            res.send(err).status(400);
-            return;
-        }
+        
         res.send(result);
     });
 });

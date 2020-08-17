@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Mediciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <table>
+    <tr>
+      <th>Fecha</th>
+      <th>Valor</th>
+    </tr>
+    <tr *ngFor="let m of measurements">
+      <td>{{m.fecha}}</td>
+      <td>{{m.valor}}</td>
+    </tr>
+  </table>
+</ion-content>
