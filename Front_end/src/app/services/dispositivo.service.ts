@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Dispositivo } from '../models/dispositivo.model';
 import { HttpClient } from '@angular/common/http';
-import { Medicion } from '../models/medicion.model';
-import { Electrovalvula } from '../models/electrovalvula.model';
-import { FilaListado } from '../models/filaListado.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -14,15 +11,14 @@ export class DispositivoService {
 
   public get listado(): Promise<Array<Dispositivo>> {
     return this._http.get("http://localhost:3000/dispositivo").toPromise().then(
-      (listado: Array<FilaListado>) => {
-        console.log(listado);
+      (listado: Array<Dispositivo>) => {
+        //console.log("Leido:",listado);
         let listado2: Array<Dispositivo> = new Array<Dispositivo>();
         listado.forEach(r => listado2.push(new Dispositivo(
-          r.dispId,
-          r.dispNom,
-          r.dispUbi,
-          new Medicion(r.medId, new Date(r.medFecha),parseInt(r.medVal)),
-          new Electrovalvula(r.elecId,r.elecNom,r.elecApe)
+          r.dispositivoId, 
+          r.nombre, 
+          r.ubicacion, 
+          r.electrovalvulaId
           )));
         return listado2;
       }
@@ -36,17 +32,15 @@ export class DispositivoService {
 
   public getDispositivo(id: number): Promise<Dispositivo> {
     return this._http.get("http://localhost:3000/dispositivo/" + id).toPromise().then(
-      (r: FilaListado) => {
+      (r: Dispositivo) => {
         let d = r[0];
         let dispositivo: Dispositivo = new Dispositivo(
-          d.dispId,
-          d.dispNom,
-          d.dispUbi,
-          new Medicion(d.medId, new Date(d.medFecha),parseInt(d.medVal)),
-          new Electrovalvula(d.elecId,d.elecNom,d.elecApe)
+          d.dispositivoId, 
+          d.nombre, 
+          d.ubicacion, 
+          d.electrovalvulaId
         );
-        console.log(d.dispId);
-        console.log("Dispositivo prometido " + dispositivo );
+        //console.log("Dispositivo prometido " + dispositivo );
         return dispositivo;
       }
     ).catch((err) => {

@@ -8,11 +8,10 @@ var routerDispositivo = express.Router();
 var pool = require('../../mysql');
 
 class Dispositivo {
-    constructor(id = 0, nombre = 'dispositivo', ubicacion = 'lugar', medicion = new Medicion(), electrovalvula = new Electrovalvula()) {
+    constructor(id = 0, nombre = 'dispositivo', ubicacion = 'lugar', medicion = new Medicion(), electrovalvula = 0) {
         this._dispositivoId = id;
         this._nombre = nombre;
         this._ubicacion = ubicacion;
-        this._medicion = medicion;
         this._electrovalvula = electrovalvula;
     }
     get id() { return this._dispositivoId; }
@@ -24,22 +23,21 @@ class Dispositivo {
     get ubicacion() { return this._ubicacion; }
     set ubicacion(u) { this._ubicacion = u; }
 
-    get medicion() { return this._medicion; }
-    set medicion(m) { this._medicion = m; }
-    
     get electrovalvula() { return this._electrovalvula; }
     set electrovalvula(e) { this._electrovalvula = e; }
 }
 
 class Medicion {
-    constructor(id = 0, fecha = new Date("1900-01-01"), valor = 0) {
+    constructor(id = 0, fecha = new Date("1900-01-01"), valor = 0, dispId=0) {
         this._medicionId = id;
         this._fecha = fecha;
         this._valor = valor;
+        this._dispositivoId = dispId;
     }
     get id() { return this._medicionId; }
     get fecha() { return this._fecha; }
     get valor() { return this._valor; }
+    get dispId() { return this._dispositivoId; }
 }
 
 class Electrovalvula {
@@ -58,33 +56,14 @@ class Electrovalvula {
     }
 }
 
-class RiegoLog {
-    constructor(electrovalvula = new Electrovalvula(), apertura = 0, fecha = new Date('1900-01-01')) {
-        this._electrovalvula = electrovalvula;
-        this._apertura = apertura < 0 ? 0 : apertura > 100 ? 100 : apertura;
-        this._fecha = fecha;
-    }
-    get electrovalvula() { return this._electrovalvula; }
-    set electrovalvula(e) { this._electrovalvula = e; }
-    get apertura() { return this._apertura; }
-    set apertura(value) {
-        this._apertura = value < 0 ? 0 : value > 100 ? 100 : value;
-    }
-    get fecha() { return this._fecha; }
-    set fecha(f) { this._fecha = f; }
-}
-
-
 //Devuelve un array de dispositivos
 routerDispositivo.get('/', function(req, res) {
-    pool.query('SELECT * FROM Listado', function(err, result, fields) {
+    pool.query('SELECT * FROM Dispositivos', function(err, result, fields) {
         if (err) {
             res.send(err).status(400);
             return;
-        }
-        
+        }        
         let dispositivos = new Array(Dispositivo);
-        //console.log(result);
 
         for (var i = 0; i < 6; i++) {           // TODO como saber cuantos son?
             var r = result[i];
@@ -93,11 +72,8 @@ routerDispositivo.get('/', function(req, res) {
                 r.dispositivoId, 
                 r.nombre, 
                 r.ubicacion, 
-                r.electrovalvulaID, 
-                new Medicion(r.medicionId, new Date(r.fecha), r.valor), 
-                new Electrovalvula(r.electrovalvulaId, r.nombre, r.apertura)));
+                r.electrovalvulaID));
         }
-        
         res.send(result);           // TODO esto es suficiente para q lo vea el Front End?
     });
 });
@@ -105,21 +81,19 @@ routerDispositivo.get('/', function(req, res) {
 
 //Devuelve un dispositivos en particular
 routerDispositivo.get('/:id', function(req, res) {
-    pool.query('SELECT * FROM Listado WHERE dispId=?',req.params.id,  function(err, result, fields) {       // TODO que hago si el ID no existe?
+    pool.query('SELECT * FROM Dispositivos WHERE dispositivoId=?',req.params.id,  function(err, result, fields) {       // TODO que hago si el ID no existe?
         if (err) {
             res.send(err).status(400);
             return;
         }
         var r = result[0];
+        console.log(r);
         let dispositivo = new Dispositivo(
             r.dispositivoId,
             r.nombre,
             r.ubicacion,
-            r.electrovalvulaID,
-            new Medicion(r.medicionId,new Date(r.fecha),r.valor),
-            new Electrovalvula(r.electrovalvulaId,r.nombre,r.apertura)
-        );
-        
+            r.electrovalvulaID
+        );       
         res.send(result);
     });
 });

@@ -3,14 +3,16 @@ var routerMedicion = express.Router();
 var pool = require('../../mysql');
 
 class Medicion {
-    constructor(id = 0, fecha = new Date("1900-01-01"), valor = 0) {
+    constructor(id = 0, fecha = new Date("1900-01-01"), valor = 0, dispId=0) {
         this._medicionId = id;
         this._fecha = fecha;
         this._valor = valor;
+        this._dispositivoId = dispId;
     }
     get id() { return this._medicionId; }
     get fecha() { return this._fecha; }
     get valor() { return this._valor; }
+    get dispId() { return this._dispositivoId; }
 }
 
 // Recibe id de dispositivo y devuelve todas las mediciones desde la mas nueva hasta la mas vieja

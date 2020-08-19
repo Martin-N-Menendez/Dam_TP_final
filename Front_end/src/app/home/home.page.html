@@ -13,21 +13,13 @@
     </ion-toolbar>
   </ion-header>
   <ion-list>
-    <ion-item *ngFor="let dispositivo of listado" routerLink="/detalle-sensor/{{dispositivo.id}}"
+    <ion-item *ngFor="let dispositivo of listado" routerLink="/detalle-sensor/{{dispositivo.dispositivoId}}"
       routerDirection="root">
       <ion-avatar slot="start">
         <ion-icon size="large" name="water-outline"></ion-icon>
-        <div [ngSwitch]="notificacion([dispositivo.medicion.valor])">
-          <ion-badge *ngSwitchCase="0" class="notificador" color="dark">{{dispositivo.medicion.valor}}
-          </ion-badge>
-          <ion-badge *ngSwitchCase="1" class="notificador" color="warning">{{dispositivo.medicion.valor}}
-          </ion-badge>
-          <ion-badge *ngSwitchCase="2" class="notificador" color="danger">{{dispositivo.medicion.valor}}
-          </ion-badge>
-        </div>
       </ion-avatar>
       <ion-label>
-        <h2>Sensor {{dispositivo.id}} - {{dispositivo.nombre}}</h2>
+        <h2>{{dispositivo.nombre}} | Electrovalvula {{dispositivo.electrovalvulaId}}</h2>
         <h3>
           <ion-icon name="pin">
           </ion-icon> {{dispositivo.ubicacion}}

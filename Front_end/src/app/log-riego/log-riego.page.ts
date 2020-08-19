@@ -23,7 +23,7 @@ export class LogRiegoPage implements OnInit {
     let dispId: number = parseInt(this.router.snapshot.paramMap.get('dispId'));
     this.dServe.getDispositivo(dispId).then((disp) => {
       this.disp = disp;
-      this.rServ.getRiegoLog(this.disp.electrovalvula.id).then((logs) => {
+      this.rServ.getRiegoLog(this.disp.electrovalvulaId).then((logs) => {
         console.log(logs);
         this.logsRiego = logs;
       })

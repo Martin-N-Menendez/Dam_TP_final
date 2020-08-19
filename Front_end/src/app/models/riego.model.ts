@@ -1,21 +1,26 @@
 import { Electrovalvula } from './electrovalvula.model';
 export class RiegoLog {
-    private _electrovalvula: Electrovalvula;
+    private _logRiegoId: number;
+    private _electrovalvulaId: number;
     private _apertura: number;
     private _fecha: Date;
 
     constructor(
-        electrovalvula: Electrovalvula = new Electrovalvula(), 
+        logRiegoId: number = 0,
+        electrovalvulaId: number = 1, 
         apertura: number = 0,
         fecha: Date = new Date('1900-01-01')
         ) {
-            this._electrovalvula = electrovalvula;
+            this._logRiegoId = logRiegoId;
+            this._electrovalvulaId = electrovalvulaId;
             this._apertura = apertura < 0 ? 0 : apertura > 100 ? 100 : apertura;
             this._fecha = fecha;
     }
 
-    public get electrovalvula(): Electrovalvula { return this._electrovalvula; }
-    public set electrovalvula(e: Electrovalvula) { this._electrovalvula = e; }
+    public get logRiegoId(): number { return this._logRiegoId; }
+
+    public get electrovalvulaId(): number { return this._electrovalvulaId; }
+    public set electrovalvulaId(e: number) { this._electrovalvulaId = e; }
 
     public get apertura(): number { return this._apertura; }
     public set apertura(value: number) { 

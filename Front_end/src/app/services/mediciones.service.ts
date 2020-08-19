@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Medicion } from '../models/medicion.model';
-import { FilaMedicion } from '../models/filaMedicion.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +12,14 @@ export class MedicionesService {
   public getMediciones(dispId: number): Promise<Array<Medicion>> {
     return this._http.get("http://localhost:3000/medicion/" + dispId)
       .toPromise()
-      .then((m: Array<FilaMedicion>) => {
+      .then((m: Array<Medicion>) => {
         let measurements: Array<Medicion> = new Array<Medicion>();
+        console.log(measurements);
         m.forEach(e => measurements.push(new Medicion(
-          e.medicionId,
+          e.id,
           e.fecha,
-          parseInt(e.valor)
+          e.valor,
+          e.dispositivoId
         )))
         return measurements;
       })
