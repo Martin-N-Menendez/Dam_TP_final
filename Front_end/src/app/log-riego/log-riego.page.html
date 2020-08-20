@@ -5,19 +5,21 @@
         <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Log de riegos</ion-title>
+    <ion-title>Log de riegos del sensor {{dispId}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <table>
     <tr>
-      <th>Fecha</th>
+      <th>ID</th>
+      <th>Fecha</th>    
       <th>Apertura</th>
     </tr>
     <tr *ngFor="let e of logsRiego">
-      <td>{{e.fecha}}</td>
-      <td>{{e.apertura}}</td>
+      <td>{{e.logRiegoId}}</td>
+      <td>{{e.fecha | date:"short" }}</td>  
+      <td>{{10*e.apertura | percent}}</td>
     </tr>
   </table>
 </ion-content>

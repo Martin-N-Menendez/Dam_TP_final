@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { RiegoLog } from '../models/riego.model';
 import { HttpClient } from '@angular/common/http';
-import { Electrovalvula } from '../models/electrovalvula.model';
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +45,18 @@ export class RiegoService {
     ).catch((err) => {
       console.log("error en la consulta de riego");
       return new RiegoLog();
+    });
+  }
+
+  public getnewRiegoLogs(id: number): Promise<Array<RiegoLog>> {
+    return this._http.get("http://localhost:3000/riego/" + id + "/todas").toPromise().then( 
+      (r: Array<RiegoLog>) => {
+        //console.log("Riego prometido " + r );
+        return r;
+      }
+    ).catch((err) => {
+      console.log("error en la consulta de riego");
+      return new Array<RiegoLog>();
     });
   }
 

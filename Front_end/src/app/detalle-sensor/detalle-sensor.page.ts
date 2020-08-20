@@ -26,16 +26,22 @@ export class DetalleSensorPage implements OnInit {
   public myChart;
   private chartOptions;
 
+  public dispId: number;
+
   public dispositivo: Dispositivo;
   public riego_log: RiegoLog;
   public riego_log_post: RiegoLog;
   public medicion: Medicion;
+  public medicion_log_post: Medicion;
 
   public Dispositivos: Array<Dispositivo>;
   public riego_logs: Array<RiegoLog>;
   public mediciones: Array<Medicion>;
 
   constructor(private dServ: DispositivoService, private router: ActivatedRoute, private rServ: RiegoService, private mServ: MedicionesService) {
+
+    this.dispId = parseInt(this.router.snapshot.paramMap.get('id'));
+
     this.Dispositivos = new Array<Dispositivo>();
     this.riego_logs = new Array<RiegoLog>();
     this.mediciones = new Array<Medicion>();
@@ -44,9 +50,15 @@ export class DetalleSensorPage implements OnInit {
     this.riego_log = new RiegoLog();
     this.medicion = new Medicion();
 
-    setTimeout(() => {
-      this.generarChart();
-      this.dispositivo = this.Dispositivos[0];
+    //this.generarChart();
+    
+  }
+
+  ngOnInit() {
+    this.actualizar_datos();
+    this.generarChart();
+
+    this.dispositivo = this.Dispositivos[0];
       console.log("Cambio el valor del sensor",this.dispositivo);  
 
       this.valorObtenido = this.riego_log.apertura;
@@ -60,13 +72,6 @@ export class DetalleSensorPage implements OnInit {
           }
         }]
       });
-    }, 100);
-    
-  }
-
-  ngOnInit() {
-    //this.actualizar_datos();
-    //this.generarChart();
   }
 
   ionViewWillEnter(){
@@ -80,13 +85,18 @@ export class DetalleSensorPage implements OnInit {
   }
 
   actualizar_datos(){
-    let id: number = parseInt(this.router.snapshot.paramMap.get('id'));
-    this.dServ.getDispositivo(id).then(d => {
+
+    // get_medicion(Id)
+    // Obtener medicion.valor  -> actualizar valor de mychart
+
+    this.generarChart();
+
+    this.dServ.getDispositivo(this.dispId ).then(d => {
       console.log("X",d);
       this.dispositivo = d;
-      this.Dispositivos.push(this.dispositivo);
+      this.Dispositivos.push(this.dispositivo); //TODO  Esto inc y aumenta la cantidad de botones
     });
-    this.rServ.getnewRiegoLog(id).then(r => {
+    this.rServ.getnewRiegoLog(this.dispId ).then(r => {
       console.log("Y",r);
       this.riego_log = r;
       this.riego_logs.push(this.riego_log);
@@ -108,7 +118,7 @@ export class DetalleSensorPage implements OnInit {
         plotShadow: false
       }
       , title: {
-        text: this.dispositivo.nombre
+        text: this.dispositivo.ubicacion
       }
 
       , credits: { enabled: false }
@@ -190,28 +200,38 @@ export class DetalleSensorPage implements OnInit {
     this.rServ.addnewRiegoLog(this.riego_log_post).then( (res) => {
       this.riego_log.apertura = 100;
       this.mensajeBoton = "CERRAR ELECTROVALVULA" + ' ' + this.dispositivo.electrovalvulaId;
-      console.log(this.riego_log_post);
-
-      this.myChart.update(
-        {
-          series: [
-            {
-              name: 'kPA',
-              data: [this.riego_log_post.apertura],
-              tooltip: { valueSuffix: ' kPA' }
-            }
-          ]
-        }
-      );
+      console.log(this.riego_log_post);  
     })
 
+    this.medicion_log_post = new Medicion();
+    this.medicion_log_post.medicionId = this.dispositivo.electrovalvulaId;
+    this.medicion_log_post.dispositivoId = this.dispositivo.electrovalvulaId;
+    this.medicion_log_post.valor = 100;
+    this.medicion_log_post.fecha = new Date();
+
+    this.mServ.addnewMedicionLog(this.medicion_log_post).then( (res) => {
+      //this.riego_log.apertura = 0;
+      //this.mensajeBoton = "ABRIR ELECTROVALVULA" + ' ' + this.dispositivo.electrovalvulaId;
+      console.log(this.medicion_log_post);  
+    })
+
+    this.myChart.update(
+      {
+        series: [
+          {
+            name: 'kPA',
+            data: [this.riego_log_post.apertura],
+            tooltip: { valueSuffix: ' kPA' }
+          }
+        ]
+      }
+    );
     
   }
 
   public cerrarValvula() {
     
     this.riego_log_post = new RiegoLog();
-
     this.riego_log_post.electrovalvulaId = this.dispositivo.electrovalvulaId;
     this.riego_log_post.apertura = 0;
     this.riego_log_post.fecha = new Date();
@@ -220,21 +240,32 @@ export class DetalleSensorPage implements OnInit {
       this.riego_log.apertura = 0;
       this.mensajeBoton = "ABRIR ELECTROVALVULA" + ' ' + this.dispositivo.electrovalvulaId;
       console.log(this.riego_log);  
+    })
+    
+    this.medicion_log_post = new Medicion();
+    this.medicion_log_post.medicionId = this.dispositivo.electrovalvulaId;
+    this.medicion_log_post.dispositivoId = this.dispositivo.electrovalvulaId;
+    this.medicion_log_post.valor = 0;
+    this.medicion_log_post.fecha = new Date();
 
-      this.myChart.update(
-        {
-          series: [
-            {
-              name: 'kPA',
-              data: [this.riego_log_post.apertura],
-              tooltip: { valueSuffix: ' kPA' }
-            }
-          ]
-        }
-      );
-
+    this.mServ.addnewMedicionLog(this.medicion_log_post).then( (res) => {
+      //this.riego_log.apertura = 0;
+      //this.mensajeBoton = "ABRIR ELECTROVALVULA" + ' ' + this.dispositivo.electrovalvulaId;
+      console.log(this.medicion_log_post);  
     })
       
+    this.myChart.update(
+      {
+        series: [
+          {
+            name: 'kPA',
+            data: [this.riego_log_post.apertura],
+            tooltip: { valueSuffix: ' kPA' }
+          }
+        ]
+      }
+    );
+
   }
 
 }

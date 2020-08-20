@@ -10,17 +10,23 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class MedicionesPage implements OnInit {
 
-  public measurements: Array<Medicion>;
+  public Mediciones: Array<Medicion>;
+  public dispId: number;
 
-  constructor(private mServ:MedicionesService, private router: ActivatedRoute) { 
-    this.measurements = new Array<Medicion>();
+  constructor(private router: ActivatedRoute, private mServ: MedicionesService) {
+    this.Mediciones = new Array<Medicion>();
+
+    this.dispId= parseInt(this.router.snapshot.paramMap.get('Id'));
+    console.log(this.dispId);
+    this.mServ.getnewMedicionLogs(this.dispId).then(r => {
+      this.Mediciones = r;
+      console.log("medicion:",r);
+    });
   }
 
+
   ngOnInit() {
-    let dispId: number = parseInt(this.router.snapshot.paramMap.get('dispId'));
-    this.mServ.getMediciones(dispId).then((meds) => {
-      this.measurements = meds;
-    })
+    
   }
 
 }

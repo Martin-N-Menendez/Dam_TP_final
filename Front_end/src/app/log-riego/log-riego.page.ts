@@ -14,20 +14,23 @@ export class LogRiegoPage implements OnInit {
 
   public disp: Dispositivo;
   public logsRiego: Array<RiegoLog>;
+  public dispId: number;
 
-  constructor(private router: ActivatedRoute, private dServe:DispositivoService, private rServ: RiegoService) {
+  constructor(private router: ActivatedRoute, private rServ: RiegoService) {
     this.logsRiego = new Array<RiegoLog>();
-  }
 
-  ngOnInit() {
-    let dispId: number = parseInt(this.router.snapshot.paramMap.get('dispId'));
-    this.dServe.getDispositivo(dispId).then((disp) => {
-      this.disp = disp;
-      this.rServ.getRiegoLog(this.disp.electrovalvulaId).then((logs) => {
-        console.log(logs);
-        this.logsRiego = logs;
-      })
+    this.dispId = parseInt(this.router.snapshot.paramMap.get('Id'));
+    console.log(this.dispId);
+    this.rServ.getnewRiegoLogs(this.dispId).then(r => {
+      this.logsRiego = r;
+      console.log("riego:",r);
     });
   }
 
+  ngOnInit() {
+    
+  }
+
 }
+
+
