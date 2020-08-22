@@ -19,7 +19,8 @@
     <tr *ngFor="let e of logsRiego">
       <td>{{e.logRiegoId}}</td>
       <td>{{e.fecha | date:"short" }}</td>  
-      <td>{{10*e.apertura | percent}}</td>
+      <td  *ngIf="e.apertura == 0" >Cerrado</td>
+      <td  *ngIf="e.apertura > 0" >{{e.apertura/100 | percent:'2.0-0'}}</td>
     </tr>
   </table>
 </ion-content>
