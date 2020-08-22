@@ -18,7 +18,7 @@ export class MedicionesPage implements OnInit {
 
     this.dispId= parseInt(this.router.snapshot.paramMap.get('Id'));
     console.log(this.dispId);
-    this.mServ.getnewMedicionLogs(this.dispId).then(r => {
+    this.mServ.getMediciones(this.dispId).then(r => {
       this.Mediciones = r;
       console.log("medicion:",r);
     });

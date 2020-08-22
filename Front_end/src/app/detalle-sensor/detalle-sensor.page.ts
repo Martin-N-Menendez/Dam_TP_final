@@ -48,56 +48,29 @@ export class DetalleSensorPage implements OnInit {
 
     this.dispositivo = new Dispositivo();
     this.riego_log = new RiegoLog();
-    this.medicion = new Medicion();
-
-    //this.generarChart();
-    
+    this.medicion = new Medicion();    
   }
 
-  ngOnInit() {
-    this.actualizar_datos();
-    this.generarChart();
-
-    this.dispositivo = this.Dispositivos[0];
-      console.log("Cambio el valor del sensor",this.dispositivo);  
-
-      this.valorObtenido = this.riego_log.apertura;
-      //llamo al update del chart para refrescar y mostrar el nuevo valor
-      this.myChart.update({
-        series: [{
-          name: 'kPA',
-          data: [this.valorObtenido],
-          tooltip: {
-            valueSuffix: ' kPA'
-          }
-        }]
-      });
+  ngOnInit() {  
+    this.actualizar_datos();  
+    this.generarChart();    
   }
 
   ionViewWillEnter(){
     this.actualizar_datos();  
-    //this.generarChart();
-  }
-
-  ionViewDidEnter() {
-    //this.actualizar_datos();  
-    //this.generarChart();
+    this.generarChart();
   }
 
   actualizar_datos(){
 
-    // get_medicion(Id)
-    // Obtener medicion.valor  -> actualizar valor de mychart
-
-    this.generarChart();
-
-    this.dServ.getDispositivo(this.dispId ).then(d => {
-      console.log("X",d);
-      this.dispositivo = d;
-      this.Dispositivos.push(this.dispositivo); //TODO  Esto inc y aumenta la cantidad de botones
+    this.mServ.getMedicion(this.dispId).then(d => {
+      console.log("Medido",d);
+      this.medicion = d;
     });
+    this.valorObtenido = Number(this.medicion.valor);
+
     this.rServ.getnewRiegoLog(this.dispId ).then(r => {
-      console.log("Y",r);
+      //console.log("Log riego",r);
       this.riego_log = r;
       this.riego_logs.push(this.riego_log);
       if(this.riego_log.apertura == 0)
@@ -105,113 +78,109 @@ export class DetalleSensorPage implements OnInit {
       else
         this.mensajeBoton = "CERRAR ELECTROVALVULA " + this.riego_log.electrovalvulaId;
     });
+  
   }
 
   generarChart() {
-    console.log("R",this.dispositivo);
-    this.chartOptions = {
+    this.chartOptions={
       chart: {
-        type: 'gauge',
-        plotBackgroundColor: null,
-        plotBackgroundImage: null,
-        plotBorderWidth: 0,
-        plotShadow: false
-      }
-      , title: {
-        text: this.dispositivo.ubicacion
-      }
+          type: 'gauge',
+          plotBackgroundColor: null,
+          plotBackgroundImage: null,
+          plotBorderWidth: 0,
+          plotShadow: false
+        }
+        ,title: {
+          text: "Sensor #"+ this.dispId
+        }
 
-      , credits: { enabled: false }
-
-
-      , pane: {
-        startAngle: -150,
-        endAngle: 150
-      }
-      // the value axis
-      , yAxis: {
+        ,credits:{enabled:false}
+        
+           
+        ,pane: {
+            startAngle: -150,
+            endAngle: 150
+        } 
+        // the value axis
+      ,yAxis: {
         min: 0,
         max: 100,
-
+  
         minorTickInterval: 'auto',
         minorTickWidth: 1,
         minorTickLength: 10,
         minorTickPosition: 'inside',
         minorTickColor: '#666',
-
+  
         tickPixelInterval: 30,
         tickWidth: 2,
         tickPosition: 'inside',
         tickLength: 10,
         tickColor: '#666',
         labels: {
-          step: 2,
-          rotation: 'auto'
+            step: 2,
+            rotation: 'auto'
         },
         title: {
-          text: 'kPA'
+            text: 'kPA'
         },
         plotBands: [{
-          from: 0,
-          to: 10,
-          color: '#BBBBBB'
+            from: 0,
+            to: 10,
+            color: '#55BF3B' // green
         }, {
-          from: 10,
-          to: 30,
-          color: '#55BF3B'
+            from: 10,
+            to: 30,
+            color: '#DDDF0D' // yellow
         }, {
-          from: 30,
-          to: 60,
-          color: '#DDDF0D'
-        }, {
-          from: 60,
-          to: 100,
-          color: '#DF5353'
+            from: 30,
+            to: 100,
+            color: '#DF5353' // red
         }]
-      }
-      ,
-
-      series: [{
+    }
+    ,
+  
+    series: [{
         name: 'kPA',
         data: [this.valorObtenido],
         tooltip: {
-          valueSuffix: ' kPA'
+            valueSuffix: ' kPA'
         }
-      }]
+    }]
 
     };
-    this.myChart = Highcharts.chart('highcharts', this.chartOptions);
+    this.myChart = Highcharts.chart('highcharts', this.chartOptions );
   }
 
   public actualizarValvula() {
+    //console.log("actual:",this.riego_log.apertura);
     if(this.riego_log.apertura == 0)
       this.abrirValvula();
     else
       this.cerrarValvula();
+      this.actualizar_datos();  
   }
 
   public abrirValvula() {
     this.riego_log_post = new RiegoLog();
 
-    this.riego_log_post.electrovalvulaId = this.dispositivo.electrovalvulaId;
+    this.riego_log_post.electrovalvulaId = this.dispId;
     this.riego_log_post.apertura = 100;
     this.riego_log_post.fecha = new Date();
 
     this.rServ.addnewRiegoLog(this.riego_log_post).then( (res) => {
-      this.riego_log.apertura = 100;
-      this.mensajeBoton = "CERRAR ELECTROVALVULA" + ' ' + this.dispositivo.electrovalvulaId;
-      console.log(this.riego_log_post);  
+      this.riego_log_post.apertura = 100;
+      this.mensajeBoton = "CERRAR ELECTROVALVULA" + ' ' + this.dispId;
+      //console.log(this.riego_log_post);  
     })
 
     this.medicion_log_post = new Medicion();
-    this.medicion_log_post.medicionId = this.dispositivo.electrovalvulaId;
-    this.medicion_log_post.dispositivoId = this.dispositivo.electrovalvulaId;
-    this.medicion_log_post.valor = 100;
+    this.medicion_log_post.dispositivoId = this.dispId;
+    this.medicion_log_post.valor = 75;
     this.medicion_log_post.fecha = new Date();
 
     this.mServ.addnewMedicionLog(this.medicion_log_post).then( (res) => {
-      //this.riego_log.apertura = 0;
-      //this.mensajeBoton = "ABRIR ELECTROVALVULA" + ' ' + this.dispositivo.electrovalvulaId;
+      this.medicion_log_post.valor = 75;
       console.log(this.medicion_log_post);  
     })
 
@@ -220,7 +189,7 @@ export class DetalleSensorPage implements OnInit {
         series: [
           {
             name: 'kPA',
-            data: [this.riego_log_post.apertura],
+            data: [this.medicion_log_post.valor],
             tooltip: { valueSuffix: ' kPA' }
           }
         ]
@@ -232,25 +201,23 @@ export class DetalleSensorPage implements OnInit {
   public cerrarValvula() {
     
     this.riego_log_post = new RiegoLog();
-    this.riego_log_post.electrovalvulaId = this.dispositivo.electrovalvulaId;
+    this.riego_log_post.electrovalvulaId = this.dispId;
     this.riego_log_post.apertura = 0;
     this.riego_log_post.fecha = new Date();
 
     this.rServ.addnewRiegoLog(this.riego_log_post).then( (res) => {
-      this.riego_log.apertura = 0;
-      this.mensajeBoton = "ABRIR ELECTROVALVULA" + ' ' + this.dispositivo.electrovalvulaId;
-      console.log(this.riego_log);  
+      this.mensajeBoton = "ABRIR ELECTROVALVULA" + ' ' + this.dispId;
+      this.riego_log_post.apertura = 0;
+      //console.log(this.riego_log);  
     })
     
     this.medicion_log_post = new Medicion();
-    this.medicion_log_post.medicionId = this.dispositivo.electrovalvulaId;
-    this.medicion_log_post.dispositivoId = this.dispositivo.electrovalvulaId;
-    this.medicion_log_post.valor = 0;
+    this.medicion_log_post.dispositivoId = this.dispId;
+    this.medicion_log_post.valor = 25;
     this.medicion_log_post.fecha = new Date();
 
     this.mServ.addnewMedicionLog(this.medicion_log_post).then( (res) => {
-      //this.riego_log.apertura = 0;
-      //this.mensajeBoton = "ABRIR ELECTROVALVULA" + ' ' + this.dispositivo.electrovalvulaId;
+      this.medicion_log_post.valor = 25;
       console.log(this.medicion_log_post);  
     })
       
@@ -259,7 +226,7 @@ export class DetalleSensorPage implements OnInit {
         series: [
           {
             name: 'kPA',
-            data: [this.riego_log_post.apertura],
+            data: [this.medicion_log_post.valor],
             tooltip: { valueSuffix: ' kPA' }
           }
         ]

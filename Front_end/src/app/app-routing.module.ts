@@ -20,7 +20,7 @@ const routes: Routes = [
     loadChildren: () => import('./log-riego/log-riego.module').then( m => m.LogRiegoPageModule)
   },
   {
-    path: 'medicion/:Id',
+    path: 'medicion/:Id/todas',
     loadChildren: () => import('./mediciones/mediciones.module').then( m => m.MedicionesPageModule)
   },
 ];
